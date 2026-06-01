@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GFIELD-ON | Viewer</title>
+  <style>
+    :root{--ink:#0f172a;--bg:#eef3f8;--line:#d9e2ef;--brand:#16417c}
+    *{box-sizing:border-box} body{margin:0;font-family:Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    .top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+    .top h1{font-size:16px;margin:0}
+    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
+    .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .layout{display:grid;grid-template-columns:40% 60%;gap:12px;padding:12px;min-height:calc(100vh - 58px)}
+    .layout.ebook-only{grid-template-columns:1fr;max-width:980px;margin:0 auto}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    .video-wrap{aspect-ratio:16/9;background:#000}
+    .video-wrap iframe{width:100%;height:100%;border:0}
+    .book{padding:12px;overflow:auto;height:calc(100vh - 94px)}
+    .page{position:relative;max-width:820px;margin:0 auto 16px;background:#fff;border:1px solid #e2e8f0}
+    .page img{display:block;width:100%}
+    .wm{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
+    .wm span{transform:rotate(-30deg);color:rgba(22,65,124,.13);font-size:48px;font-weight:900}
+    .qa{padding:8px 12px;border-top:1px solid var(--line);background:#f8fafc}
+    .qa h3{font-size:13px;margin:0 0 6px}
+    .qa-list{display:flex;flex-wrap:wrap;gap:6px}
+    .pill{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer}
+    .memo{margin-top:8px;font-size:13px;color:#334155}
+    @media print{
+      .top,.video-panel,.qa{display:none!important}
+      .layout,.layout.ebook-only{display:block;padding:0}
+      .book{height:auto;overflow:visible;padding:0}
+      .page{border:none;margin:0;page-break-after:always}
+      .wm{display:block}
+      .wm span{display:none}
+      .wm:before,.wm:after{content:attr(data-name);position:absolute;left:50%;transform:translateX(-50%) rotate(-30deg);font-size:44px;color:rgba(22,65,124,.17);font-weight:900}
+      .wm:before{top:26%}
+      .wm:after{top:68%}
+      .wm i{position:absolute;left:50%;top:47%;transform:translateX(-50%) rotate(-30deg);font-style:normal;font-size:44px;color:rgba(22,65,124,.17);font-weight:900}
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1 id="bookTitle">GFIELD-ON Viewer</h1>
+    <div>
+      <button class="btn" id="askBtn">독쌤 질문 있어요</button>
+      <button class="btn primary" onclick="window.print()">인쇄</button>
+    </div>
+  </header>
+
+  <main class="layout" id="layout">
+    <section class="panel video-panel" id="videoPanel">
+      <div class="video-wrap"><iframe id="videoFrame" allowfullscreen></iframe></div>
+      <div class="qa">
+        <h3>문항 액션 (1~40)</h3>
+        <div class="qa-list" id="qaList"></div>
+        <div class="memo" id="qaMemo">문항을 선택하면 관련 액션이 표시됩니다.</div>
+      </div>
+    </section>
+    <section class="panel book" id="bookPane"></section>
+  </main>
+
+  <script>
+    const student = sessionStorage.getItem("gfield_student_name") || "GFIELD STUDENT";
+    const params = new URLSearchParams(location.search);
+    const requestedId = params.get("id");
+    const fallbackBook = {
+      id: "sample_premier",
+      title: "프리미어 샘플",
+      type: "video",
+      lectures: [{ page: 1, title: "개념 강의", url: "https://www.youtube.com/embed/HtSd564pCpw?rel=0" }],
+      pages: [
+        "https://dummyimage.com/1240x1754/ffffff/222222&text=Premier+Page+1",
+        "https://dummyimage.com/1240x1754/ffffff/222222&text=Premier+Page+2"
+      ],
+      examActions: [{ type: "text", number: 1, label: "핵심 개념 체크" }]
+    };
+    let book = fallbackBook;
+
+    function normalizeLectureUrl(url) {
+      const raw = String(url || "");
+      if (!raw) return "";
+      if (raw.includes("youtube.com/embed/")) return raw;
+      const m = raw.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{6,})/);
+      if (m) return `https://www.youtube.com/embed/${m[1]}?rel=0`;
+      return raw;
+    }
+
+    function renderBook() {
+      document.getElementById("bookTitle").textContent = book.title || "GFIELD-ON";
+      const hasVideo = book.type === "video" && Array.isArray(book.lectures) && book.lectures.length > 0;
+      const layout = document.getElementById("layout");
+      if (!hasVideo) {
+        document.getElementById("videoPanel").style.display = "none";
+        layout.classList.add("ebook-only");
+      } else {
+        document.getElementById("videoPanel").style.display = "";
+        layout.classList.remove("ebook-only");
+        document.getElementById("videoFrame").src = normalizeLectureUrl(book.lectures[0].url);
+      }
+
+      const pane = document.getElementById("bookPane");
+      const pages = Array.isArray(book.pages) && book.pages.length
+        ? book.pages
+        : ["https://dummyimage.com/1240x1754/ffffff/222222&text=No+Page+Data"];
+      pane.innerHTML = pages.map((src, idx) => `
+        <article class="page" data-page="${idx + 1}">
+          <img src="${src}" alt="page ${idx + 1}">
+          <div class="wm" data-name="G-ON ${student}"><span>G-ON ${student}</span><i>G-ON ${student}</i></div>
+        </article>
+      `).join("");
+    }
+
+    function bindActions() {
+      const qaList = document.getElementById("qaList");
+      const qaMemo = document.getElementById("qaMemo");
+      qaList.innerHTML = Array.from({ length: 40 }, (_, i) => i + 1).map((n) => `<button class="pill" data-n="${n}">${n}번</button>`).join("");
+      qaList.onclick = (e) => {
+        const btn = e.target.closest(".pill");
+        if (!btn) return;
+        const n = Number(btn.dataset.n);
+        const rows = (book.examActions || []).filter((x) => Number(x.number) === n);
+        if (!rows.length) { qaMemo.textContent = `${n}번: 등록된 액션이 없습니다.`; return; }
+        const r = rows[0];
+        if (r.type === "button" && r.url) {
+          window.open(r.url, "_blank", "noopener");
+          qaMemo.textContent = `${n}번: ${r.label}`;
+          return;
+        }
+        qaMemo.textContent = `${n}번: ${r.label}`;
+      };
+    }
+
+    async function loadBook() {
+      try {
+        const r = await fetch("materials.json?cache_bust=" + Date.now());
+        if (!r.ok) throw new Error("no materials");
+        const rows = await r.json();
+        if (Array.isArray(rows) && rows.length) {
+          const selected =
+            rows.find((x) => requestedId && x.id === requestedId) ||
+            rows.find((x) => x.targetUrl === "premier_archive.html") ||
+            rows[0];
+          book = {
+            ...fallbackBook,
+            ...selected,
+            title: selected.display_name || selected.title || fallbackBook.title
+          };
+        }
+      } catch (_e) {}
+      renderBook();
+      bindActions();
+    }
+
+    document.getElementById("askBtn").addEventListener("click", async () => {
+      const prompt = `[AI 독쌤 질문]\n학생:${student}\n교재:${book.title}\n질문: (여기에 입력)\n조건: 힌트 중심, 단계별 설명, 유사문제 1개 제안`;
+      try { await navigator.clipboard.writeText(prompt); } catch (_e) {}
+      window.open("https://chatgpt.com/g/g-6a16d661edbc819186e94925e75f1ad8-jipildeu-yeongjaegyoyug-hs-danpyeong-eodeubaijeo", "_blank", "noopener");
+    });
+
+    loadBook();
+  </script>
+</body>
+</html>

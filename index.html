@@ -1,245 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GFIELD-ON | Student Portal</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GFIELD-ON | Intro</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
-    body { font-family: "Pretendard", sans-serif; background: #f8fafc; overflow-x: hidden; }
-    .gate-bg {
-      background: radial-gradient(circle at top right, #1e3a8a, #0f172a), url("https://images.unsplash.com/photo-1502082553048-f009c37129b9?q=80&w=2070") center/cover;
-      background-blend-mode: overlay;
-    }
-    .hidden-view { display: none !important; }
-    .brand-logo { height: 46px; width: auto; object-fit: contain; }
-    .header-logo { height: 28px; width: auto; object-fit: contain; }
+    body{font-family:"Pretendard",sans-serif}
   </style>
 </head>
-<body class="text-slate-800">
-  <div id="view-gate" class="min-h-screen flex items-center justify-center p-6 gate-bg relative z-50">
-    <div class="bg-[#0f172a]/80 backdrop-blur-xl p-10 rounded-[2rem] border border-slate-700 shadow-2xl w-full max-w-md text-center">
-      <img src="logo.png" alt="GFIELD 로고" class="brand-logo mx-auto mb-4">
-      <h2 class="text-xl font-bold text-white tracking-[0.2em] mb-1">GFIELD-ON</h2>
-      <h1 class="text-xs font-medium text-[#D4AF37] tracking-widest mb-8 uppercase">Premium Archive</h1>
-      <div class="space-y-5 text-left">
-        <div class="relative">
-          <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-          <input type="text" id="studentName" placeholder="학생 이름 입력" class="w-full bg-slate-800/50 border border-slate-600 text-white px-4 py-4 pl-11 rounded-xl text-sm outline-none focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37] transition-all">
-        </div>
-        <button onclick="handleLogin()" class="w-full bg-gradient-to-r from-[#D4AF37] to-[#B38728] text-[#0f172a] font-extrabold py-4 rounded-xl shadow-lg hover:scale-[1.02] transition-transform flex items-center justify-center gap-2 mt-4">
-          <span>나의 서재 열기</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </button>
-        <a href="https://open.kakao.com/me/gfield" target="_blank" rel="noopener" class="w-full block text-center bg-white/90 text-slate-800 font-extrabold py-3 rounded-xl border border-slate-200 hover:bg-white transition mt-2">
-          DOCSSAM 질문 있어요!!
-        </a>
+<body class="min-h-screen bg-slate-950 text-white">
+  <main class="min-h-screen grid place-items-center p-6">
+    <section class="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900/80 backdrop-blur p-8 text-center">
+      <img src="logo.png" alt="GFIELD 로고" class="h-14 mx-auto mb-4">
+      <h1 class="text-2xl font-black tracking-wide">GFIELD-ON</h1>
+      <p class="text-sm text-slate-300 mt-2">학생 이름으로 로그인 후 서재로 진입합니다.</p>
+      <div class="mt-6 space-y-3 text-left">
+        <label class="text-xs font-bold text-slate-300">학생 이름</label>
+        <input id="studentName" class="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 outline-none focus:border-amber-400" placeholder="이름 입력">
+        <button id="enterBtn" class="w-full rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-slate-900 py-3 font-black">서재 입장</button>
       </div>
-      <p id="errorMsg" class="text-red-400 font-bold text-sm mt-5 h-5"></p>
-    </div>
-  </div>
-
-  <div id="view-dashboard" class="min-h-screen flex flex-col hidden-view bg-slate-50 pb-20">
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-      <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-          <img src="logo.png" alt="GFIELD 로고" class="header-logo">
-          <h1 class="text-lg font-black tracking-tight text-slate-800">GFIELD-ON</h1>
-        </div>
-        <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200 flex items-center gap-2">
-          <i class="fa-solid fa-circle-user text-slate-400"></i>
-          <span id="profileName" class="text-blue-700">학생</span>
-        </div>
-      </div>
-    </header>
-
-    <section class="max-w-6xl mx-auto px-6 mt-8 w-full">
-      <div class="bg-gradient-to-r from-[#173b70] to-[#283fa6] rounded-3xl p-8 sm:p-10 text-white shadow-xl">
-        <h2 class="text-2xl sm:text-3xl font-black mb-2" id="greetingTitle">안녕, 오늘도 차분하게 시작하자.</h2>
-        <p class="text-blue-100 font-medium text-sm sm:text-base leading-relaxed">자료를 선택해서 바로 학습을 시작할 수 있어.</p>
-      </div>
+      <p id="errorMsg" class="h-5 mt-3 text-sm text-red-300"></p>
     </section>
-
-    <main class="max-w-6xl mx-auto px-6 mt-10 w-full flex-1">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-        <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-          <i class="fa-solid fa-books text-blue-600"></i> 나의 학습 서재
-        </h3>
-        <div class="flex gap-2 overflow-x-auto whitespace-nowrap pb-2 sm:pb-0 w-full sm:w-auto">
-          <button onclick="filterMaterials('all', this)" class="filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold border border-slate-800 transition-all">전체</button>
-          <button onclick="filterMaterials('hwangso', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300 hover:bg-slate-50 transition-all">황소 대비</button>
-          <button onclick="filterMaterials('premier', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300 hover:bg-slate-50 transition-all">프리미어</button>
-          <button onclick="filterMaterials('test', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300 hover:bg-slate-50 transition-all">모의고사/과제</button>
-        </div>
-      </div>
-      <div id="libraryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-      <section class="mt-10 bg-white rounded-2xl border border-slate-200 p-6">
-        <div class="flex items-center justify-between mb-4">
-          <h4 class="text-lg font-extrabold text-slate-800">시험지 액션 빌더 (1~40)</h4>
-          <span class="text-xs font-bold text-slate-500">버튼형 / 번호형 / 텍스트형</span>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
-          <select id="builderType" class="border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold">
-            <option value="button">버튼형</option>
-            <option value="number">번호형</option>
-            <option value="text">텍스트형</option>
-          </select>
-          <select id="builderQuestion" class="border border-slate-300 rounded-lg px-3 py-2 text-sm font-semibold"></select>
-          <input id="builderLabel" class="border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="표시 텍스트 (예: 12번 풀이)" />
-          <input id="builderUrl" class="border border-slate-300 rounded-lg px-3 py-2 text-sm" placeholder="유튜브 URL (버튼형일 때)" />
-          <button onclick="addExamAction()" class="bg-slate-900 text-white rounded-lg px-4 py-2 text-sm font-bold">추가</button>
-        </div>
-        <p class="text-xs text-slate-500 mt-3">번호형은 문항 라벨용, 텍스트형은 메모용으로 저장됩니다.</p>
-        <div id="examActionList" class="mt-4 space-y-2"></div>
-      </section>
-    </main>
-  </div>
-
+  </main>
   <script>
-    window.materialsData = [];
-    window.examActions = [];
-
-    async function handleLogin() {
+    function enter(){
       const name = document.getElementById("studentName").value.trim();
       const err = document.getElementById("errorMsg");
-      if (!name) {
-        err.textContent = "이름을 입력해주세요.";
-        return;
-      }
-
+      if(!name){ err.textContent = "이름을 입력해주세요."; return; }
       sessionStorage.setItem("gfield_student_name", name);
-      err.textContent = "서재를 여는 중입니다...";
-
-      try {
-        const response = await fetch("materials.json?cache_bust=" + Date.now());
-        if (response.ok) window.materialsData = await response.json();
-      } catch (_) {}
-
-      if (!window.materialsData.length) {
-        window.materialsData = [
-          { id: "sample_hwangso", title: "황소 실전 모의고사 샘플", category: "hwangso", categoryLabel: "황소 대비", type: "video", desc: "샘플 자료입니다. materials.json 연결 후 자동 목록으로 대체됩니다.", targetUrl: "hwangso_archive.html", features: { aiTutor: true, diagnostic: false } },
-          { id: "sample_premier", title: "프리미어 창의사고력 샘플", category: "premier", categoryLabel: "프리미어", type: "ebook", desc: "샘플 자료입니다. 실제 배포 자료로 교체하세요.", targetUrl: "premier_archive.html", features: { aiTutor: true, diagnostic: true } }
-        ];
-      }
-
-      document.getElementById("view-gate").classList.add("hidden-view");
-      document.getElementById("view-dashboard").classList.remove("hidden-view");
-      document.getElementById("profileName").textContent = name + " 학생";
-      document.getElementById("greetingTitle").textContent = name + " 학생, 반가워.";
-      renderLibrary("all");
-      initBuilder();
+      location.href = "library.html";
     }
-
-    function filterMaterials(cat, btn) {
-      document.querySelectorAll(".filter-btn").forEach((b) => {
-        b.className = "filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300 hover:bg-slate-50 transition-all";
-      });
-      btn.className = "filter-btn active bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold border border-slate-800 transition-all";
-      renderLibrary(cat);
-    }
-
-    function renderLibrary(cat) {
-      const grid = document.getElementById("libraryGrid");
-      const filtered = cat === "all" ? window.materialsData : window.materialsData.filter((m) => m.category === cat);
-      if (!filtered.length) {
-        grid.innerHTML = '<div class="col-span-full text-center py-16 text-slate-400 font-bold">해당 카테고리 자료가 없습니다.</div>';
-        return;
-      }
-
-      grid.innerHTML = filtered.map((item) => {
-        const isVideo = item.type === "video";
-        const aiTutor = !!(item.features && item.features.aiTutor);
-        const diagnostic = !!(item.features && item.features.diagnostic);
-        const badgeColor = isVideo ? "bg-purple-100 text-purple-700 border-purple-200" : "bg-emerald-100 text-emerald-700 border-emerald-200";
-        const badgeIcon = isVideo ? '<i class="fa-solid fa-play-circle mr-1"></i> 영상강의' : '<i class="fa-solid fa-book-open mr-1"></i> eBook';
-        const catColor = item.category === "hwangso" ? "bg-red-50 text-red-600" : (item.category === "premier" ? "bg-blue-50 text-blue-600" : "bg-slate-100 text-slate-600");
-        const extraBadges = [
-          aiTutor ? '<span class="text-[11px] font-black px-2.5 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200">AI 튜터</span>' : "",
-          diagnostic ? '<span class="text-[11px] font-black px-2.5 py-1 rounded-full border bg-cyan-50 text-cyan-700 border-cyan-200">진단평가</span>' : ""
-        ].join("");
-        return `
-          <div onclick="window.location.href='${item.targetUrl}'" class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer flex flex-col overflow-hidden group">
-            <div class="h-2 w-full ${isVideo ? "bg-gradient-to-r from-purple-500 to-indigo-600" : "bg-gradient-to-r from-emerald-400 to-teal-500"}"></div>
-            <div class="p-6 flex-1 flex flex-col">
-              <div class="flex justify-between items-start mb-4">
-                <span class="text-[11px] font-black px-2.5 py-1 rounded-md ${catColor}">${item.categoryLabel || "기타"}</span>
-                <span class="text-[11px] font-black px-2.5 py-1 rounded-full border ${badgeColor}">${badgeIcon}</span>
-              </div>
-              <div class="flex gap-2 mb-3">${extraBadges}</div>
-              <h3 class="text-lg font-black text-slate-800 leading-snug mb-2 group-hover:text-blue-700 transition-colors line-clamp-2">${item.title}</h3>
-              <p class="text-sm text-slate-500 font-medium leading-relaxed line-clamp-2 mb-4">${item.desc || ""}</p>
-              <div class="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-slate-400 group-hover:text-blue-600 transition-colors">
-                <span>자료 열람하기</span><i class="fa-solid fa-arrow-right"></i>
-              </div>
-            </div>
-          </div>`;
-      }).join("");
-    }
-
-    function initBuilder() {
-      const q = document.getElementById("builderQuestion");
-      if (!q || q.options.length) return;
-      for (let i = 1; i <= 40; i += 1) {
-        const o = document.createElement("option");
-        o.value = String(i);
-        o.textContent = `${i}번`;
-        q.appendChild(o);
-      }
-      renderExamActionList();
-    }
-
-    function addExamAction() {
-      const type = document.getElementById("builderType").value;
-      const question = Number(document.getElementById("builderQuestion").value || "1");
-      const label = document.getElementById("builderLabel").value.trim();
-      const url = document.getElementById("builderUrl").value.trim();
-      if (!label && type !== "number") return;
-      if (type === "button" && !url) return;
-
-      window.examActions.push({
-        id: "qa_" + Date.now(),
-        type,
-        question,
-        label: label || `${question}번`,
-        url: type === "button" ? url : "",
-        note: type === "text" ? label : ""
-      });
-      document.getElementById("builderLabel").value = "";
-      document.getElementById("builderUrl").value = "";
-      renderExamActionList();
-    }
-
-    function removeExamAction(id) {
-      window.examActions = window.examActions.filter((x) => x.id !== id);
-      renderExamActionList();
-    }
-
-    function renderExamActionList() {
-      const wrap = document.getElementById("examActionList");
-      if (!wrap) return;
-      if (!window.examActions.length) {
-        wrap.innerHTML = '<div class="text-sm text-slate-400 font-semibold">아직 등록된 액션이 없습니다.</div>';
-        return;
-      }
-      wrap.innerHTML = window.examActions.map((x) => `
-        <div class="flex items-center justify-between border border-slate-200 rounded-lg px-3 py-2">
-          <div class="text-sm">
-            <span class="font-black text-slate-700">${x.question}번</span>
-            <span class="ml-2 px-2 py-0.5 rounded bg-slate-100 text-slate-600 font-bold">${x.type}</span>
-            <span class="ml-2 font-semibold text-slate-700">${x.label}</span>
-            ${x.url ? `<a class="ml-2 text-blue-600 font-semibold" target="_blank" href="${x.url}">링크</a>` : ""}
-          </div>
-          <button onclick="removeExamAction('${x.id}')" class="text-xs font-bold text-red-500">삭제</button>
-        </div>
-      `).join("");
-    }
-
-    document.getElementById("studentName").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleLogin();
-    });
+    document.getElementById("enterBtn").addEventListener("click", enter);
+    document.getElementById("studentName").addEventListener("keydown", (e)=>{ if(e.key==="Enter") enter(); });
   </script>
 </body>
 </html>

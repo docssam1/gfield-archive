@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GFIELD-ON | Library</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");body{font-family:"Pretendard",sans-serif}</style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <img src="logo.png" alt="GFIELD 로고" class="h-7">
+        <h1 class="text-lg font-black">GFIELD-ON</h1>
+      </div>
+      <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200">
+        <i class="fa-solid fa-circle-user mr-1"></i>
+        <span id="profileName">학생</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-8">
+    <section class="bg-gradient-to-r from-[#173b70] to-[#283fa6] rounded-3xl p-8 text-white shadow-xl">
+      <h2 class="text-2xl font-black mb-2" id="greetingTitle">반가워요.</h2>
+      <p class="text-blue-100">오늘도 서재에서 차분하게 시작해요.</p>
+    </section>
+
+    <section class="mt-8">
+      <div class="flex flex-wrap gap-2 mb-6">
+        <button onclick="filterMaterials('all', this)" class="filter-btn bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold border border-slate-800">전체</button>
+        <button onclick="filterMaterials('hwangso', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300">황소 대비</button>
+        <button onclick="filterMaterials('premier', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300">프리미어</button>
+        <button onclick="filterMaterials('test', this)" class="filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300">모의고사/과제</button>
+      </div>
+      <div id="libraryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </section>
+  </main>
+
+  <script>
+    const studentName = sessionStorage.getItem("gfield_student_name") || "학생";
+    document.getElementById("profileName").textContent = `${studentName} 학생`;
+    document.getElementById("greetingTitle").textContent = `${studentName} 학생, 반가워요.`;
+
+    window.materialsData = [];
+
+    async function loadMaterials(){
+      try{
+        const r = await fetch("materials.json?cache_bust=" + Date.now());
+        if(r.ok) window.materialsData = await r.json();
+      }catch(_e){}
+      if(!window.materialsData.length){
+        window.materialsData = [
+          { id:"sample_hwangso", title:"황소 실전 모의고사 샘플", category:"hwangso", categoryLabel:"황소 대비", type:"video", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:false}, thumbnail_path:""},
+          { id:"sample_premier", title:"프리미어 창의사고력 샘플", category:"premier", categoryLabel:"프리미어", type:"ebook", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:true}, thumbnail_path:""}
+        ];
+      }
+      renderLibrary("all");
+    }
+
+    function filterMaterials(cat, btn){
+      document.querySelectorAll(".filter-btn").forEach((b)=>{
+        b.className = "filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300";
+      });
+      btn.className = "filter-btn bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold border border-slate-800";
+      renderLibrary(cat);
+    }
+
+    function renderLibrary(cat){
+      const grid = document.getElementById("libraryGrid");
+      const filtered = cat === "all" ? window.materialsData : window.materialsData.filter((m)=>m.category===cat);
+      if(!filtered.length){ grid.innerHTML = '<div class="text-slate-400 font-bold">자료가 없습니다.</div>'; return; }
+      grid.innerHTML = filtered.map((item)=>{
+        const isVideo = item.type === "video";
+        const badge = isVideo ? "영상강의" : "eBook";
+        const ai = item.features?.aiTutor ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200">AI 튜터</span>' : '';
+        const dg = item.features?.diagnostic ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-cyan-50 text-cyan-700 border-cyan-200">진단평가</span>' : '';
+        const thumb = item.thumbnail_path
+          ? `<img src="${item.thumbnail_path}" alt="${item.title}" class="w-full aspect-[3/4] object-cover">`
+          : `<div class="w-full aspect-[3/4] bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-500 font-black text-xs tracking-widest">NO COVER</div>`;
+        return `
+          <a href="${item.targetUrl}" class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all overflow-hidden block">
+            ${thumb}
+            <div class="h-2 w-full ${isVideo ? "bg-gradient-to-r from-purple-500 to-indigo-600" : "bg-gradient-to-r from-emerald-400 to-teal-500"}"></div>
+            <div class="p-6">
+              <div class="flex justify-between items-start mb-3">
+                <span class="text-[11px] font-black px-2.5 py-1 rounded-md bg-slate-100 text-slate-700">${item.categoryLabel || "기타"}</span>
+                <span class="text-[11px] font-black px-2.5 py-1 rounded-full border bg-slate-50 text-slate-700 border-slate-200">${badge}</span>
+              </div>
+              <div class="flex gap-2 mb-3">${ai}${dg}</div>
+              <h3 class="text-lg font-black text-slate-800 mb-2">${item.title}</h3>
+              <p class="text-sm text-slate-500">${item.desc || ""}</p>
+            </div>
+          </a>`;
+      }).join("");
+    }
+
+    loadMaterials();
+  </script>
+</body>
+</html>
