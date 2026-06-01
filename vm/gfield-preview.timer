@@ -1,0 +1,10 @@
+[Unit]
+Description=Run GFIELD preview every 30 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=30min
+Unit=gfield-preview.service
+
+[Install]
+WantedBy=timers.target

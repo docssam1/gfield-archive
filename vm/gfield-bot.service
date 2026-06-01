@@ -1,0 +1,14 @@
+[Unit]
+Description=GFIELD Telegram Preview Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/gfield
+ExecStart=/opt/gfield/.venv/bin/python /opt/gfield/bot/bot.py
+Restart=always
+RestartSec=3
+EnvironmentFile=/opt/gfield/bot/.env
+
+[Install]
+WantedBy=multi-user.target

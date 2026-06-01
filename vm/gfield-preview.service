@@ -1,0 +1,9 @@
+[Unit]
+Description=GFIELD Scheduled Preview Runner
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/gfield
+ExecStart=/opt/gfield/.venv/bin/python /opt/gfield/bot/run_preview_task.py
+EnvironmentFile=/opt/gfield/bot/.env
