@@ -6,7 +6,10 @@
   <title>GFIELD-ON | Library</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <style>@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");body{font-family:"Pretendard",sans-serif}</style>
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+    body{font-family:"Pretendard",sans-serif}
+  </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
   <header class="bg-white border-b border-slate-200 sticky top-0 z-20">
@@ -15,9 +18,12 @@
         <img src="logo.png" alt="GFIELD 로고" class="h-7">
         <h1 class="text-lg font-black">GFIELD-ON</h1>
       </div>
-      <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200">
-        <i class="fa-solid fa-circle-user mr-1"></i>
-        <span id="profileName">학생</span>
+      <div class="flex items-center gap-2">
+        <a href="hyper_focus_gate.html" class="text-sm font-black bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">Hyper Focus</a>
+        <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200">
+          <i class="fa-solid fa-circle-user mr-1"></i>
+          <span id="profileName">학생</span>
+        </div>
       </div>
     </div>
   </header>
@@ -46,37 +52,41 @@
 
     window.materialsData = [];
 
-    async function loadMaterials(){
-      try{
+    async function loadMaterials() {
+      try {
         const r = await fetch("materials.json?cache_bust=" + Date.now());
-        if(r.ok) window.materialsData = await r.json();
-      }catch(_e){}
-      if(!window.materialsData.length){
+        if (r.ok) window.materialsData = await r.json();
+      } catch (_e) {}
+      if (!window.materialsData.length) {
         window.materialsData = [
           { id:"sample_hwangso", title:"황소 실전 모의고사 샘플", category:"hwangso", categoryLabel:"황소 대비", type:"video", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:false}, thumbnail_path:""},
-          { id:"sample_premier", title:"프리미어 창의사고력 샘플", category:"premier", categoryLabel:"프리미어", type:"ebook", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:true}, thumbnail_path:""}
+          { id:"sample_premier", title:"프리미어 창의사고 샘플", category:"premier", categoryLabel:"프리미어", type:"ebook", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:true}, thumbnail_path:""},
+          { id:"sample_hyperfocus", title:"Hyper Focus Answer Key", category:"test", categoryLabel:"정답/해설", type:"ebook", desc:"승인번호 확인 후 이동합니다.", targetUrl:"hyper_focus_gate.html", features:{aiTutor:false, diagnostic:false}, thumbnail_path:""}
         ];
       }
       renderLibrary("all");
     }
 
-    function filterMaterials(cat, btn){
-      document.querySelectorAll(".filter-btn").forEach((b)=>{
+    function filterMaterials(cat, btn) {
+      document.querySelectorAll(".filter-btn").forEach((b) => {
         b.className = "filter-btn bg-white text-slate-600 px-4 py-2 rounded-full text-sm font-bold border border-slate-300";
       });
       btn.className = "filter-btn bg-slate-800 text-white px-4 py-2 rounded-full text-sm font-bold border border-slate-800";
       renderLibrary(cat);
     }
 
-    function renderLibrary(cat){
+    function renderLibrary(cat) {
       const grid = document.getElementById("libraryGrid");
-      const filtered = cat === "all" ? window.materialsData : window.materialsData.filter((m)=>m.category===cat);
-      if(!filtered.length){ grid.innerHTML = '<div class="text-slate-400 font-bold">자료가 없습니다.</div>'; return; }
-      grid.innerHTML = filtered.map((item)=>{
+      const filtered = cat === "all" ? window.materialsData : window.materialsData.filter((m) => m.category === cat);
+      if (!filtered.length) {
+        grid.innerHTML = '<div class="text-slate-400 font-bold">자료가 없습니다.</div>';
+        return;
+      }
+      grid.innerHTML = filtered.map((item) => {
         const isVideo = item.type === "video";
         const badge = isVideo ? "영상강의" : "eBook";
-        const ai = item.features?.aiTutor ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200">AI 튜터</span>' : '';
-        const dg = item.features?.diagnostic ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-cyan-50 text-cyan-700 border-cyan-200">진단평가</span>' : '';
+        const ai = item.features?.aiTutor ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-amber-50 text-amber-700 border-amber-200">AI 튜터</span>' : "";
+        const dg = item.features?.diagnostic ? '<span class="text-[11px] font-black px-2 py-1 rounded-full border bg-cyan-50 text-cyan-700 border-cyan-200">진단평가</span>' : "";
         const thumb = item.thumbnail_path
           ? `<img src="${item.thumbnail_path}" alt="${item.title}" class="w-full aspect-[3/4] object-cover">`
           : `<div class="w-full aspect-[3/4] bg-gradient-to-br from-slate-200 to-slate-300 flex items-center justify-center text-slate-500 font-black text-xs tracking-widest">NO COVER</div>`;
