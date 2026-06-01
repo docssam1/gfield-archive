@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GFIELD-ON | Intro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+    body{font-family:"Pretendard",sans-serif}
+  </style>
+</head>
+<body class="min-h-screen bg-slate-950 text-white">
+  <main class="min-h-screen grid place-items-center p-6">
+    <section class="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900/80 backdrop-blur p-8 text-center">
+      <img src="logo.png" alt="GFIELD 로고" class="h-14 mx-auto mb-4">
+      <h1 class="text-2xl font-black tracking-wide">GFIELD-ON</h1>
+      <p class="text-sm text-slate-300 mt-2">학생 이름으로 로그인 후 서재로 진입합니다.</p>
+      <div class="mt-6 space-y-3 text-left">
+        <label class="text-xs font-bold text-slate-300">학생 이름</label>
+        <input id="studentName" class="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 outline-none focus:border-amber-400" placeholder="이름 입력">
+        <button id="enterBtn" class="w-full rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-slate-900 py-3 font-black">서재 입장</button>
+      </div>
+      <p id="errorMsg" class="h-5 mt-3 text-sm text-red-300"></p>
+    </section>
+  </main>
+  <script>
+    function enter(){
+      const name = document.getElementById("studentName").value.trim();
+      const err = document.getElementById("errorMsg");
+      if(!name){ err.textContent = "이름을 입력해주세요."; return; }
+      sessionStorage.setItem("gfield_student_name", name);
+      location.href = "library.html";
+    }
+    document.getElementById("enterBtn").addEventListener("click", enter);
+    document.getElementById("studentName").addEventListener("keydown", (e)=>{ if(e.key==="Enter") enter(); });
+  </script>
+</body>
+</html>
