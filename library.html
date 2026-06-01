@@ -18,12 +18,9 @@
         <img src="logo.png" alt="GFIELD 로고" class="h-7">
         <h1 class="text-lg font-black">GFIELD-ON</h1>
       </div>
-      <div class="flex items-center gap-2">
-        <a href="hyper_focus_gate.html" class="text-sm font-black bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200">Hyper Focus</a>
-        <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200">
-          <i class="fa-solid fa-circle-user mr-1"></i>
-          <span id="profileName">학생</span>
-        </div>
+      <div class="text-sm font-bold bg-slate-100 text-slate-600 px-4 py-1.5 rounded-full border border-slate-200">
+        <i class="fa-solid fa-circle-user mr-1"></i>
+        <span id="profileName">학생</span>
       </div>
     </div>
   </header>
@@ -52,16 +49,35 @@
 
     window.materialsData = [];
 
-    async function loadMaterials() {
+    async function fetchJsonSafe(url) {
       try {
-        const r = await fetch("materials.json?cache_bust=" + Date.now());
-        if (r.ok) window.materialsData = await r.json();
-      } catch (_e) {}
+        const res = await fetch(url, { headers: { "Accept": "application/json" } });
+        if (!res.ok) {
+          return { ok: false, status: res.status, reason: "http_error", data: null };
+        }
+        const contentType = (res.headers.get("content-type") || "").toLowerCase();
+        if (!contentType.includes("application/json")) {
+          const raw = await res.text();
+          return { ok: false, status: res.status, reason: "non_json", data: null, rawHead: raw.slice(0, 120) };
+        }
+        const data = await res.json();
+        return { ok: true, status: res.status, reason: "ok", data };
+      } catch (_err) {
+        return { ok: false, status: 0, reason: "network_error", data: null };
+      }
+    }
+
+    async function loadMaterials() {
+      const result = await fetchJsonSafe("materials.json?cache_bust=" + Date.now());
+      if (result.ok && Array.isArray(result.data)) {
+        window.materialsData = result.data;
+      } else {
+        console.info("[GFIELD] materials fallback:", result.reason, result.status);
+      }
       if (!window.materialsData.length) {
         window.materialsData = [
           { id:"sample_hwangso", title:"황소 실전 모의고사 샘플", category:"hwangso", categoryLabel:"황소 대비", type:"video", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:false}, thumbnail_path:""},
-          { id:"sample_premier", title:"프리미어 창의사고 샘플", category:"premier", categoryLabel:"프리미어", type:"ebook", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:true}, thumbnail_path:""},
-          { id:"sample_hyperfocus", title:"Hyper Focus Answer Key", category:"test", categoryLabel:"정답/해설", type:"ebook", desc:"승인번호 확인 후 이동합니다.", targetUrl:"hyper_focus_gate.html", features:{aiTutor:false, diagnostic:false}, thumbnail_path:""}
+          { id:"sample_premier", title:"프리미어 창의사고 샘플", category:"premier", categoryLabel:"프리미어", type:"ebook", desc:"샘플 자료입니다.", targetUrl:"premier_archive.html", features:{aiTutor:true, diagnostic:true}, thumbnail_path:""}
         ];
       }
       renderLibrary("all");
