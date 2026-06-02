@@ -5,175 +5,315 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GFIELD-ON | Viewer</title>
   <style>
-    :root{--ink:#0f172a;--bg:#eef3f8;--line:#d9e2ef;--brand:#16417c}
-    *{box-sizing:border-box} body{margin:0;font-family:Pretendard,system-ui,sans-serif;background:var(--bg);color:var(--ink)}
-    .top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
-    .top h1{font-size:16px;margin:0}
-    .btn{border:1px solid #cbd5e1;background:#fff;border-radius:10px;padding:8px 10px;font-weight:800;cursor:pointer}
-    .btn.primary{background:var(--brand);color:#fff;border-color:var(--brand)}
-    .layout{display:grid;grid-template-columns:40% 60%;gap:12px;padding:12px;min-height:calc(100vh - 58px)}
-    .layout.ebook-only{grid-template-columns:1fr;max-width:980px;margin:0 auto}
-    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-    .video-wrap{aspect-ratio:16/9;background:#000}
-    .video-wrap iframe{width:100%;height:100%;border:0}
-    .book{padding:12px;overflow:auto;height:calc(100vh - 94px)}
-    .page{position:relative;max-width:820px;margin:0 auto 16px;background:#fff;border:1px solid #e2e8f0}
-    .page img{display:block;width:100%}
-    .wm{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center}
-    .wm span{transform:rotate(-30deg);color:rgba(22,65,124,.13);font-size:48px;font-weight:900}
-    .qa{padding:8px 12px;border-top:1px solid var(--line);background:#f8fafc}
-    .qa h3{font-size:13px;margin:0 0 6px}
-    .qa-list{display:flex;flex-wrap:wrap;gap:6px}
-    .pill{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:800;cursor:pointer}
-    .memo{margin-top:8px;font-size:13px;color:#334155}
+    @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+    :root{--ink:#0f172a;--bg:#eef3f8;--line:#d9e2ef;--brand:#16417c;--gold:#d4af37}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+    button{font-family:inherit}
+    .top{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+    .top-inner{height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 16px}
+    .title-wrap{min-width:0}
+    .title-wrap h1{margin:0;font-size:16px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .title-wrap p{margin:3px 0 0;color:#64748b;font-size:12px;font-weight:800}
+    .actions{display:flex;align-items:center;gap:8px}
+    .btn{height:38px;border:1px solid #cbd5e1;background:white;border-radius:8px;padding:0 12px;font-size:13px;font-weight:900;color:#334155;cursor:pointer}
+    .btn.primary{background:var(--brand);border-color:var(--brand);color:white}
+    .btn.gold{background:#f8e08a;border-color:#e7c75f;color:#111827}
+    .layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:14px;padding:14px;min-height:calc(100vh - 58px)}
+    .layout.ebook-only{display:block;max-width:1040px;margin:0 auto}
+    .book-panel{min-width:0}
+    .book-scroll{height:calc(100vh - 86px);overflow:auto;padding:4px 6px 36px}
+    .ebook-only .book-scroll{height:auto;overflow:visible;padding:14px 10px 48px}
+    .side{position:sticky;top:72px;height:calc(100vh - 86px);display:flex;flex-direction:column;gap:12px}
+    .panel{background:white;border:1px solid var(--line);border-radius:8px;overflow:hidden;box-shadow:0 8px 26px rgba(15,23,42,.055)}
+    .video-box{aspect-ratio:16/9;background:#020617}
+    .video-box iframe{width:100%;height:100%;border:0;display:block}
+    .side-body{padding:14px}
+    .side-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .side-title h2{margin:0;font-size:14px;letter-spacing:-.02em}
+    .hint{color:#64748b;font-size:12px;line-height:1.6}
+    .lecture-list{display:flex;flex-direction:column;gap:6px;max-height:154px;overflow:auto}
+    .lecture-btn{width:100%;min-height:36px;border:1px solid #e2e8f0;background:#f8fafc;border-radius:8px;padding:8px 10px;text-align:left;font-size:12px;font-weight:900;color:#334155;cursor:pointer}
+    .lecture-btn.active{border-color:var(--brand);background:#eef5ff;color:var(--brand)}
+    .qa-list{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+    .pill{height:34px;border:1px solid #cbd5e1;background:#fff;border-radius:8px;font-size:12px;font-weight:1000;color:#475569;cursor:pointer}
+    .pill.active{background:#0f172a;color:white;border-color:#0f172a}
+    .memo{margin-top:10px;padding:10px;border-radius:8px;background:#f8fafc;color:#334155;font-size:13px;line-height:1.6}
+    .doc-page{position:relative;width:min(860px,100%);margin:0 auto 16px;background:white;border:1px solid #e2e8f0;box-shadow:0 14px 36px rgba(15,23,42,.08);overflow:hidden}
+    .doc-page img{position:relative;z-index:1;display:block;width:100%;height:auto;background:white}
+    .page-empty{aspect-ratio:1/1.414;display:grid;place-items:center;padding:40px;color:#64748b;font-weight:900;text-align:center}
+    .page-meta{position:absolute;left:12px;top:10px;z-index:4;background:rgba(15,23,42,.78);color:white;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:1000;backdrop-filter:blur(8px)}
+    .wm{position:absolute;inset:0;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .wm span{transform:rotate(-34deg) scale(1.05);transform-origin:center;color:rgba(22,65,124,.09);font-size:clamp(34px,5vw,58px);font-weight:1000;letter-spacing:-.02em;white-space:nowrap}
+    .mobile-video-note{display:none}
+    @media(max-width:980px){
+      .layout{display:flex;flex-direction:column;padding:10px}
+      .side{position:static;height:auto;order:0}
+      .book-panel{order:1}
+      .book-scroll{height:auto;overflow:visible;padding:4px 2px 40px}
+      .top-inner{height:auto;min-height:58px;padding:10px 12px;align-items:flex-start}
+      .actions{flex-wrap:wrap;justify-content:flex-end}
+      .btn{height:34px;padding:0 10px}
+      .qa-list{grid-template-columns:repeat(8,1fr)}
+      .mobile-video-note{display:block}
+    }
+    @media(max-width:560px){
+      .qa-list{grid-template-columns:repeat(5,1fr)}
+      .title-wrap h1{white-space:normal}
+      .actions{max-width:150px}
+      .btn{font-size:12px}
+    }
     @media print{
-      .top,.video-panel,.qa{display:none!important}
-      .layout,.layout.ebook-only{display:block;padding:0}
-      .book{height:auto;overflow:visible;padding:0}
-      .page{border:none;margin:0;page-break-after:always}
-      .wm{display:block}
+      body{background:white}
+      .top,.side{display:none!important}
+      .layout,.layout.ebook-only{display:block;padding:0;max-width:none;margin:0}
+      .book-scroll{height:auto;overflow:visible;padding:0}
+      .doc-page{width:100%;max-width:none;border:0;box-shadow:none;margin:0;page-break-after:always;overflow:hidden}
+      .page-meta{display:none}
+      .wm{display:flex;flex-direction:column;justify-content:space-around;align-items:center;padding:64px 0;z-index:4}
       .wm span{display:none}
-      .wm:before,.wm:after{content:attr(data-name);position:absolute;left:50%;transform:translateX(-50%) rotate(-30deg);font-size:44px;color:rgba(22,65,124,.17);font-weight:900}
-      .wm:before{top:26%}
-      .wm:after{top:68%}
-      .wm i{position:absolute;left:50%;top:47%;transform:translateX(-50%) rotate(-30deg);font-style:normal;font-size:44px;color:rgba(22,65,124,.17);font-weight:900}
+      .wm:before,.wm:after,.wm i{content:attr(data-name);display:block;font-style:normal;color:rgba(22,65,124,.145);font-size:46px;font-weight:1000;transform:rotate(-34deg) scale(1.05);transform-origin:center;white-space:nowrap}
+      .wm i{display:block}
     }
   </style>
 </head>
 <body>
   <header class="top">
-    <h1 id="bookTitle">GFIELD-ON Viewer</h1>
-    <div>
-      <button class="btn" id="askBtn">독쌤 질문 있어요</button>
-      <button class="btn primary" onclick="window.print()">인쇄</button>
+    <div class="top-inner">
+      <div class="title-wrap">
+        <h1 id="bookTitle">GFIELD-ON Viewer</h1>
+        <p id="bookMeta">eBook Viewer</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="backBtn" type="button">서재</button>
+        <button class="btn gold" id="askBtn" type="button">독쌤 질문</button>
+        <button class="btn primary" id="printBtn" type="button">인쇄</button>
+      </div>
     </div>
   </header>
 
   <main class="layout" id="layout">
-    <section class="panel video-panel" id="videoPanel">
-      <div class="video-wrap"><iframe id="videoFrame" allowfullscreen></iframe></div>
-      <div class="qa">
-        <h3>문항 액션 (1~40)</h3>
-        <div class="qa-list" id="qaList"></div>
-        <div class="memo" id="qaMemo">문항을 선택하면 관련 액션이 표시됩니다.</div>
-      </div>
+    <section class="book-panel">
+      <div class="book-scroll" id="bookPane"></div>
     </section>
-    <section class="panel book" id="bookPane"></section>
+
+    <aside class="side" id="sidePanel">
+      <section class="panel" id="videoPanel">
+        <div class="video-box"><iframe id="videoFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>
+        <div class="side-body">
+          <div class="side-title">
+            <h2>강의 영상</h2>
+            <span class="hint" id="lectureCount">0개</span>
+          </div>
+          <div class="lecture-list" id="lectureList"></div>
+          <p class="hint mobile-video-note">모바일에서는 영상 아래로 교재가 이어집니다.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="side-body">
+          <div class="side-title">
+            <h2>문항 액션</h2>
+            <span class="hint">1~40</span>
+          </div>
+          <div class="qa-list" id="qaList"></div>
+          <div class="memo" id="qaMemo">문항을 선택하면 등록된 링크나 메모가 표시됩니다.</div>
+        </div>
+      </section>
+    </aside>
   </main>
 
   <script>
-    const student = sessionStorage.getItem("gfield_student_name") || "GFIELD STUDENT";
+    if (sessionStorage.getItem("gfield_approved") !== "true") {
+      location.href = "index.html";
+    }
+
+    const student = sessionStorage.getItem("gfield_student_name") || "GFIELD";
     const params = new URLSearchParams(location.search);
     const requestedId = params.get("id");
+    const CHATGPT_URL = "https://chatgpt.com/g/g-6a16d661edbc819186e94925e75f1ad8-jipildeu-yeongjaegyoyug-hs-danpyeong-eodeubaijeo";
+
     const fallbackBook = {
       id: "sample_premier",
       title: "프리미어 샘플",
+      display_name: "프리미어 샘플",
+      categoryLabel: "프리미어",
+      level: "초등",
       type: "video",
-      lectures: [{ page: 1, title: "개념 강의", url: "https://www.youtube.com/embed/HtSd564pCpw?rel=0" }],
-      pages: [
-        "https://dummyimage.com/1240x1754/ffffff/222222&text=Premier+Page+1",
-        "https://dummyimage.com/1240x1754/ffffff/222222&text=Premier+Page+2"
+      lectures: [
+        { page: 1, number: 1, title: "1페이지 개념 강의", url: "https://www.youtube.com/embed/HtSd564pCpw?rel=0" },
+        { page: 2, number: 2, title: "2페이지 풀이 강의", url: "https://www.youtube.com/embed/HtSd564pCpw?rel=0" }
       ],
-      examActions: [{ type: "text", number: 1, label: "핵심 개념 체크" }]
+      pages: [
+        "https://dummyimage.com/1240x1754/ffffff/222222&text=GFIELD+Page+1",
+        "https://dummyimage.com/1240x1754/ffffff/222222&text=GFIELD+Page+2"
+      ],
+      examActions: [
+        { type: "text", number: 1, label: "핵심 개념 체크" },
+        { type: "button", number: 2, label: "풀이 영상 열기", url: "https://www.youtube.com/watch?v=HtSd564pCpw" }
+      ]
     };
     let book = fallbackBook;
+    let activeQuestion = null;
 
     async function fetchJsonSafe(url) {
       try {
         const res = await fetch(url, { headers: { "Accept": "application/json" } });
-        if (!res.ok) {
-          return { ok: false, status: res.status, reason: "http_error", data: null };
-        }
+        if (!res.ok) return { ok: false, status: res.status, reason: "http_error", data: null };
         const contentType = (res.headers.get("content-type") || "").toLowerCase();
-        if (!contentType.includes("application/json")) {
-          const raw = await res.text();
-          return { ok: false, status: res.status, reason: "non_json", data: null, rawHead: raw.slice(0, 120) };
-        }
-        const data = await res.json();
-        return { ok: true, status: res.status, reason: "ok", data };
+        if (!contentType.includes("application/json")) return { ok: false, status: res.status, reason: "non_json", data: null };
+        return { ok: true, status: res.status, reason: "ok", data: await res.json() };
       } catch (_err) {
         return { ok: false, status: 0, reason: "network_error", data: null };
       }
     }
 
     function normalizeLectureUrl(url) {
-      const raw = String(url || "");
+      const raw = String(url || "").trim();
       if (!raw) return "";
       if (raw.includes("youtube.com/embed/")) return raw;
-      const m = raw.match(/(?:youtu\.be\/|v=)([a-zA-Z0-9_-]{6,})/);
-      if (m) return `https://www.youtube.com/embed/${m[1]}?rel=0`;
+      const match = raw.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{6,})/);
+      if (match) return `https://www.youtube.com/embed/${match[1]}?rel=0`;
       return raw;
     }
 
-    function renderBook() {
-      document.getElementById("bookTitle").textContent = book.title || "GFIELD-ON";
-      const hasVideo = book.type === "video" && Array.isArray(book.lectures) && book.lectures.length > 0;
-      const layout = document.getElementById("layout");
-      if (!hasVideo) {
-        document.getElementById("videoPanel").style.display = "none";
-        layout.classList.add("ebook-only");
-      } else {
-        document.getElementById("videoPanel").style.display = "";
-        layout.classList.remove("ebook-only");
-        document.getElementById("videoFrame").src = normalizeLectureUrl(book.lectures[0].url);
-      }
+    function displayTitle() {
+      return book.display_name || book.title || "GFIELD-ON";
+    }
 
+    function hasVideo() {
+      return Array.isArray(book.lectures) && book.lectures.some((lecture) => normalizeLectureUrl(lecture.url));
+    }
+
+    function selectLecture(index) {
+      const lectures = (book.lectures || []).filter((lecture) => normalizeLectureUrl(lecture.url));
+      const selected = lectures[index] || lectures[0];
+      if (!selected) return;
+      document.getElementById("videoFrame").src = normalizeLectureUrl(selected.url);
+      document.querySelectorAll(".lecture-btn").forEach((btn) => btn.classList.toggle("active", Number(btn.dataset.index) === index));
+      if (selected.page) {
+        document.querySelector(`[data-page="${selected.page}"]`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderLectures() {
+      const lectures = (book.lectures || []).filter((lecture) => normalizeLectureUrl(lecture.url));
+      const list = document.getElementById("lectureList");
+      document.getElementById("lectureCount").textContent = `${lectures.length}개`;
+      if (!lectures.length) {
+        list.innerHTML = '<p class="hint">등록된 강의 영상이 없습니다.</p>';
+        return;
+      }
+      list.innerHTML = lectures.map((lecture, index) => `
+        <button class="lecture-btn ${index === 0 ? "active" : ""}" data-index="${index}" type="button">
+          ${lecture.page ? `${lecture.page}p · ` : ""}${lecture.title || `${index + 1}번 강의`}
+        </button>
+      `).join("");
+      list.onclick = (event) => {
+        const btn = event.target.closest(".lecture-btn");
+        if (!btn) return;
+        selectLecture(Number(btn.dataset.index));
+      };
+      selectLecture(0);
+    }
+
+    function renderPages() {
       const pane = document.getElementById("bookPane");
-      const pages = Array.isArray(book.pages) && book.pages.length
-        ? book.pages
-        : ["https://dummyimage.com/1240x1754/ffffff/222222&text=No+Page+Data"];
-      pane.innerHTML = pages.map((src, idx) => `
-        <article class="page" data-page="${idx + 1}">
-          <img src="${src}" alt="page ${idx + 1}">
+      const pages = Array.isArray(book.pages) && book.pages.length ? book.pages : [];
+      if (!pages.length) {
+        pane.innerHTML = `
+          <article class="doc-page">
+            <div class="page-empty">페이지 이미지가 아직 없습니다.<br>교재 제작기가 pages 배열을 생성하면 여기에 표시됩니다.</div>
+            <div class="wm" data-name="G-ON ${student}"><span>G-ON ${student}</span><i>G-ON ${student}</i></div>
+          </article>
+        `;
+        return;
+      }
+      pane.innerHTML = pages.map((src, index) => `
+        <article class="doc-page" data-page="${index + 1}">
+          <span class="page-meta">${index + 1}p</span>
+          <img src="${src}" alt="${displayTitle()} ${index + 1}페이지" loading="${index > 1 ? "lazy" : "eager"}">
           <div class="wm" data-name="G-ON ${student}"><span>G-ON ${student}</span><i>G-ON ${student}</i></div>
         </article>
       `).join("");
     }
 
-    function bindActions() {
+    function renderQuestionActions() {
       const qaList = document.getElementById("qaList");
-      const qaMemo = document.getElementById("qaMemo");
-      qaList.innerHTML = Array.from({ length: 40 }, (_, i) => i + 1).map((n) => `<button class="pill" data-n="${n}">${n}번</button>`).join("");
-      qaList.onclick = (e) => {
-        const btn = e.target.closest(".pill");
+      qaList.innerHTML = Array.from({ length: 40 }, (_, i) => i + 1)
+        .map((n) => `<button class="pill" data-n="${n}" type="button">${n}</button>`)
+        .join("");
+      qaList.onclick = (event) => {
+        const btn = event.target.closest(".pill");
         if (!btn) return;
-        const n = Number(btn.dataset.n);
-        const rows = (book.examActions || []).filter((x) => Number(x.number) === n);
-        if (!rows.length) { qaMemo.textContent = `${n}번: 등록된 액션이 없습니다.`; return; }
-        const r = rows[0];
-        if (r.type === "button" && r.url) {
-          window.open(r.url, "_blank", "noopener");
-          qaMemo.textContent = `${n}번: ${r.label}`;
+        activeQuestion = Number(btn.dataset.n);
+        document.querySelectorAll(".pill").forEach((item) => item.classList.toggle("active", item === btn));
+        const rows = (book.examActions || []).filter((action) => Number(action.number) === activeQuestion);
+        const memo = document.getElementById("qaMemo");
+        if (!rows.length) {
+          memo.textContent = `${activeQuestion}번: 등록된 액션이 없습니다.`;
           return;
         }
-        qaMemo.textContent = `${n}번: ${r.label}`;
+        const action = rows[0];
+        memo.textContent = `${activeQuestion}번: ${action.label || "등록된 액션"}`;
+        if (action.type === "button" && action.url) window.open(action.url, "_blank", "noopener");
       };
+    }
+
+    function renderBook() {
+      document.getElementById("bookTitle").textContent = displayTitle();
+      document.getElementById("bookMeta").textContent = `${book.categoryLabel || book.category || "자료"}${book.level ? ` · ${book.level}` : ""}`;
+      const layout = document.getElementById("layout");
+      const sidePanel = document.getElementById("sidePanel");
+      const videoPanel = document.getElementById("videoPanel");
+
+      if (hasVideo()) {
+        layout.classList.remove("ebook-only");
+        sidePanel.style.display = "";
+        videoPanel.style.display = "";
+        renderLectures();
+      } else {
+        layout.classList.add("ebook-only");
+        sidePanel.style.display = "none";
+      }
+
+      renderPages();
+      renderQuestionActions();
     }
 
     async function loadBook() {
       const result = await fetchJsonSafe("materials.json?cache_bust=" + Date.now());
       if (result.ok && Array.isArray(result.data) && result.data.length) {
-        const rows = result.data;
         const selected =
-          rows.find((x) => requestedId && x.id === requestedId) ||
-          rows.find((x) => x.targetUrl === "premier_archive.html") ||
-          rows[0];
+          result.data.find((item) => requestedId && item.id === requestedId) ||
+          result.data.find((item) => item.targetUrl === "premier_archive.html") ||
+          result.data[0];
         book = {
           ...fallbackBook,
           ...selected,
-          title: selected.display_name || selected.title || fallbackBook.title
+          title: selected.display_name || selected.title || fallbackBook.title,
+          lectures: selected.lectures || selected.lecture_urls || fallbackBook.lectures,
+          pages: selected.pages || fallbackBook.pages
         };
       } else {
-        console.info("[GFIELD] book fallback:", result.reason, result.status);
+        console.info("[GFIELD] viewer fallback:", result.reason, result.status);
       }
       renderBook();
-      bindActions();
     }
 
+    document.getElementById("backBtn").addEventListener("click", () => { location.href = "library.html"; });
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
     document.getElementById("askBtn").addEventListener("click", async () => {
-      const prompt = `[AI 독쌤 질문]\n학생:${student}\n교재:${book.title}\n질문: (여기에 입력)\n조건: 힌트 중심, 단계별 설명, 유사문제 1개 제안`;
-      try { await navigator.clipboard.writeText(prompt); } catch (_e) {}
-      window.open("https://chatgpt.com/g/g-6a16d661edbc819186e94925e75f1ad8-jipildeu-yeongjaegyoyug-hs-danpyeong-eodeubaijeo", "_blank", "noopener");
+      const prompt = [
+        "[AI 독쌤 질문]",
+        `학생: ${student}`,
+        `교재: ${displayTitle()}`,
+        activeQuestion ? `문항: ${activeQuestion}번` : "문항: 아직 선택하지 않음",
+        "질문: 여기에 궁금한 내용을 입력",
+        "조건: 정답 직접 제시보다 힌트 중심, 단계별 사고, 유사문제 1개 제안"
+      ].join("\n");
+      try { await navigator.clipboard.writeText(prompt); } catch (_err) {}
+      window.open(CHATGPT_URL, "_blank", "noopener");
     });
 
     loadBook();
