@@ -3,65 +3,180 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GFIELD-ON | Intro</title>
+  <title>GFIELD-ON ARCHIVE</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
-    body{font-family:"Pretendard",sans-serif}
-    .story-line{animation:storyUp .7s ease both}
-    .story-line:nth-child(2){animation-delay:.18s}
-    .story-line:nth-child(3){animation-delay:.36s}
-    .story-line:nth-child(4){animation-delay:.54s}
-    @keyframes storyUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    :root{--brand:#16417c;--gold:#d4af37;--ink:#111827}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Pretendard",system-ui,sans-serif;background:#f8fafc;color:var(--ink)}
+    .locked-hero{
+      min-height:92vh;
+      display:grid;
+      place-items:center;
+      padding:32px 20px;
+      background:
+        linear-gradient(rgba(4,10,20,.68),rgba(4,10,20,.76)),
+        url("logo.png") center 18% / min(440px,68vw) auto no-repeat,
+        #07111f;
+    }
+    .archive-panel{
+      width:min(720px,100%);
+      margin-top:140px;
+      text-align:center;
+      color:white;
+    }
+    .eyebrow{font-size:12px;font-weight:900;letter-spacing:.28em;color:#e7c75f}
+    .brand-title{margin:18px 0 0;font-size:clamp(42px,8vw,82px);line-height:.95;font-weight:1000;letter-spacing:.02em}
+    .hero-copy{margin-top:24px;font-size:clamp(20px,4vw,34px);line-height:1.32;font-weight:900;letter-spacing:-.03em}
+    .hero-sub{margin:18px auto 0;max-width:560px;color:#cbd5e1;font-size:15px;line-height:1.8}
+    .gate{
+      width:min(420px,100%);
+      margin:32px auto 0;
+      padding:18px;
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:24px;
+      background:rgba(15,23,42,.78);
+      box-shadow:0 24px 80px rgba(0,0,0,.32);
+      backdrop-filter:blur(14px);
+    }
+    .gate input{
+      width:100%;
+      height:54px;
+      border:1px solid rgba(255,255,255,.2);
+      border-radius:16px;
+      background:rgba(2,6,23,.72);
+      color:white;
+      text-align:center;
+      font-size:19px;
+      font-weight:900;
+      outline:none;
+    }
+    .gate input:focus{border-color:#e7c75f;box-shadow:0 0 0 3px rgba(212,175,55,.18)}
+    .gate button{
+      width:100%;
+      height:54px;
+      margin-top:12px;
+      border:0;
+      border-radius:16px;
+      background:#e7c75f;
+      color:#07111f;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .intro-section{padding:80px 20px}
+    .wrap{width:min(1120px,100%);margin:0 auto}
+    .section-head{max-width:720px}
+    .section-head p{margin:0 0 12px;color:var(--brand);font-size:12px;font-weight:1000;letter-spacing:.22em}
+    .section-head h2{margin:0;font-size:clamp(30px,5vw,56px);line-height:1.15;letter-spacing:-.05em}
+    .section-head .desc{margin-top:18px;color:#4b5563;font-size:16px;line-height:1.8}
+    .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:34px}
+    .feature-card{min-height:230px;border:1px solid #e5e7eb;border-radius:8px;background:white;padding:22px;display:flex;flex-direction:column;justify-content:space-between}
+    .image-slot{height:118px;border:1px dashed #cbd5e1;border-radius:8px;background:#f1f5f9;display:grid;place-items:center;color:#64748b;font-size:13px;font-weight:900}
+    .feature-card h3{margin:18px 0 8px;font-size:20px;letter-spacing:-.03em}
+    .feature-card p{margin:0;color:#64748b;font-size:14px;line-height:1.7}
+    .story-band{background:#0f172a;color:white}
+    .story-band .section-head p{color:#e7c75f}
+    .story-band .section-head .desc{color:#cbd5e1}
+    .cta-row{margin-top:30px;display:flex;flex-wrap:wrap;gap:12px}
+    .cta-link{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 18px;border-radius:8px;background:var(--brand);color:white;text-decoration:none;font-weight:1000}
+    .cta-link.secondary{background:white;color:var(--brand);border:1px solid #cbd5e1}
+    @media(max-width:860px){
+      .locked-hero{min-height:88vh;background-size:min(320px,76vw) auto}
+      .archive-panel{margin-top:110px}
+      .feature-grid{grid-template-columns:1fr}
+      .intro-section{padding:58px 18px}
+    }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
-  <main class="min-h-screen grid place-items-center p-6 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,.16),transparent_32%),radial-gradient(circle_at_top_right,rgba(96,165,250,.16),transparent_34%)]">
-    <section class="w-full max-w-3xl rounded-[2rem] border border-slate-700 bg-slate-900/80 backdrop-blur p-7 md:p-10 text-center shadow-2xl shadow-black/40">
-      <img src="logo.png" alt="GFIELD 로고" class="h-14 mx-auto mb-5">
+<body>
+  <!-- LOCKED_TOP_START: 상단 확정본. 아래 소개 섹션만 계속 개선한다. -->
+  <main class="locked-hero">
+    <section class="archive-panel" aria-labelledby="archiveTitle">
+      <p class="eyebrow">GFIELD-ON ARCHIVE</p>
+      <h1 id="archiveTitle" class="brand-title">GFIELD-ON</h1>
+      <p class="hero-copy">
+        한 자리에서 꿋꿋이 지켜온<br>
+        성공하는 공부 습관의 10년
+      </p>
+      <p class="hero-sub">
+        쉽게 흉내 낼 수 없는 지필드의 기록을 승인된 학생과 가정에만 조용히 엽니다.
+      </p>
 
-      <div class="mb-7 text-left md:text-center">
-        <p class="story-line text-amber-200 text-sm md:text-base font-black tracking-[.22em]">쉿,</p>
-        <h1 class="story-line mt-3 text-4xl md:text-6xl font-black tracking-[-.08em] leading-none">
-          GFIELD-ON
-        </h1>
-        <p class="story-line mt-5 text-2xl md:text-4xl font-black tracking-[-.06em] leading-tight">
-          우리 아이의 교재가<br class="md:hidden"> 온라인 서재로 열립니다.
-        </p>
-        <p class="story-line mt-5 text-sm md:text-lg text-slate-300 leading-8 tracking-[-.02em]">
-          지필드 영재교육의 교재, 풀이 영상, 학습 기록이<br class="hidden md:block">
-          한 학생의 이름 아래 차곡차곡 연결됩니다.
-        </p>
-      </div>
-
-      <div class="mb-7 rounded-3xl border border-amber-200/20 bg-gradient-to-r from-amber-200/10 via-white/5 to-blue-300/10 p-5 text-left">
-        <p class="text-sm md:text-base text-slate-200 leading-7 font-bold tracking-[-.03em]">
-          매년 쌓인 결과는 숫자로 남고,<br>
-          그 숫자는 다시 한 아이의 공부 습관으로 이어집니다.
-        </p>
-        <p class="mt-3 text-xs md:text-sm text-slate-400 leading-6">
-          이름을 입력하면 학생별 서재로 입장합니다.
-        </p>
-      </div>
-
-      <div class="mt-6 space-y-3 text-left max-w-md mx-auto">
-        <label class="text-xs font-bold text-slate-300">학생 이름</label>
-        <input id="studentName" class="w-full rounded-xl border border-slate-600 bg-slate-800 px-4 py-3 outline-none focus:border-amber-400" placeholder="이름 입력">
-        <button id="enterBtn" class="w-full rounded-xl bg-gradient-to-r from-amber-300 to-yellow-500 text-slate-900 py-3 font-black">서재 입장</button>
-      </div>
-      <p id="errorMsg" class="h-5 mt-3 text-sm text-red-300"></p>
+      <form class="gate" id="approvalForm">
+        <label for="approvalCode" class="sr-only">승인번호</label>
+        <input id="approvalCode" type="password" inputmode="numeric" autocomplete="one-time-code" placeholder="승인번호 입력">
+        <button type="submit">아카이브 입장</button>
+        <p id="errorMsg" class="h-5 mt-3 text-sm text-red-300"></p>
+      </form>
     </section>
   </main>
+  <!-- LOCKED_TOP_END -->
+
+  <!-- INTRO_DESCRIPTION_SECTION_START: 아래 홈페이지 섹션은 계속 개선 예정 -->
+  <section class="intro-section">
+    <div class="wrap">
+      <div class="section-head">
+        <p>GFIELD MATERIALS</p>
+        <h2>교재와 수업 기록이 한곳에 모이는 자료실</h2>
+        <div class="desc">교재 이미지, 영상강의, 설명회 자료, 성적표와 리포트 이미지를 차례로 연결할 수 있도록 섹션 구조만 먼저 고정합니다.</div>
+      </div>
+      <div class="feature-grid">
+        <article class="feature-card">
+          <div class="image-slot">교재 이미지</div>
+          <div>
+            <h3>교재 아카이브</h3>
+            <p>수업 자료와 과제 흐름을 학생별 자료실로 연결합니다.</p>
+          </div>
+        </article>
+        <article class="feature-card">
+          <div class="image-slot">성적표 / 리포트 이미지</div>
+          <div>
+            <h3>성장 리포트</h3>
+            <p>성적표, 피드백, 오답 흐름을 리포트 자동화와 이어갑니다.</p>
+          </div>
+        </article>
+        <article class="feature-card">
+          <div class="image-slot">카카오톡 소통 이미지</div>
+          <div>
+            <h3>학부모 소통 기록</h3>
+            <p>상담과 안내의 기록을 필요한 범위 안에서 정리합니다.</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro-section story-band">
+    <div class="wrap">
+      <div class="section-head">
+        <p>10 YEARS OF GFIELD</p>
+        <h2>10년의 기록, 학부모와 함께 만든 유대</h2>
+        <div class="desc">지필드의 자료실은 단순한 파일 목록이 아니라, 아이의 습관과 가정의 신뢰가 쌓인 기록입니다.</div>
+      </div>
+      <div class="cta-row">
+        <a class="cta-link" href="https://open.kakao.com/me/gfield" target="_blank" rel="noopener">상담 문의</a>
+        <a class="cta-link secondary" href="#approvalForm">승인번호 입력</a>
+      </div>
+    </div>
+  </section>
+  <!-- INTRO_DESCRIPTION_SECTION_END -->
+
   <script>
-    function enter(){
-      const name = document.getElementById("studentName").value.trim();
-      const err = document.getElementById("errorMsg");
-      if(!name){ err.textContent = "이름을 입력해주세요."; return; }
-      sessionStorage.setItem("gfield_student_name", name);
+    const APPROVAL_CODE = "777200";
+
+    document.getElementById("approvalForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const code = document.getElementById("approvalCode").value.trim();
+      const error = document.getElementById("errorMsg");
+      if (code !== APPROVAL_CODE) {
+        error.textContent = "승인번호가 일치하지 않습니다.";
+        return;
+      }
+      sessionStorage.setItem("gfield_approved", "true");
+      sessionStorage.setItem("gfield_student_name", "GFIELD");
       location.href = "library.html";
-    }
-    document.getElementById("enterBtn").addEventListener("click", enter);
-    document.getElementById("studentName").addEventListener("keydown", (e)=>{ if(e.key==="Enter") enter(); });
+    });
   </script>
 </body>
 </html>
